@@ -9,7 +9,7 @@ import type {
 
 export type { UploadResult, RetrieveResult, VerifyResult, FileInfo, DecentraVaultOptions };
 
-const DEFAULT_BASE_URL = 'https://api.decentravault.com';
+const DEFAULT_BASE_URL = 'https://decentra-vault.onrender.com/api';
 
 /**
  * DecentraVault SDK

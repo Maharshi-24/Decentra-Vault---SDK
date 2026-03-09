@@ -49,7 +49,7 @@ interface FileInfo {
 interface DecentraVaultOptions {
     /**
      * Override the API base URL.
-     * Defaults to 'https://api.decentravault.com'
+     * Defaults to 'https://decentra-vault.onrender.com/api'
      * Use 'http://localhost:3000/api' during local development.
      */
     baseUrl?: string;

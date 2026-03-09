@@ -40,7 +40,7 @@ async function decryptFile(encryptedBase64, keyHex, ivHex, authTagHex) {
 }
 
 // src/index.ts
-var DEFAULT_BASE_URL = "https://api.decentravault.com";
+var DEFAULT_BASE_URL = "https://decentra-vault.onrender.com/api";
 var DecentraVault = class {
   constructor(apiKey, options = {}) {
     if (!apiKey || typeof apiKey !== "string") {
