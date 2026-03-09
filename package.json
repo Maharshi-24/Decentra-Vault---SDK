@@ -1,0 +1,30 @@
+{
+  "name": "decentravault",
+  "version": "0.1.0",
+  "description": "Encrypted decentralized file storage — one API key, zero complexity, maximum security.",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts --clean",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "files": ["dist"],
+  "keywords": ["encryption", "ipfs", "blockchain", "decentralized", "storage", "polygon", "web3"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Maharshi-24/Decentra-Vault---SDK.git"
+  },
+  "devDependencies": {
+    "tsup": "^8.0.0",
+    "typescript": "^5.0.0"
+  }
+}
