@@ -44,7 +44,16 @@ interface FileInfo {
     sizeBytes: number;
     hash: string;
     cid: string;
+    userEmail: string;
     createdAt: string;
+}
+interface EndUserFilterOptions {
+    /** End-user email used for per-user file scoping */
+    userEmail: string;
+}
+interface UploadFileOptions extends EndUserFilterOptions {
+    /** Reserved for future use */
+    metadata?: Record<string, unknown>;
 }
 interface DecentraVaultOptions {
     /**
@@ -96,7 +105,7 @@ declare class DecentraVault {
      * @param filename  Original filename (stored encrypted — never sent to IPFS)
      * @param mimeType  MIME type e.g. 'application/pdf'
      */
-    upload(file: Blob | Uint8Array | ArrayBuffer, filename?: string, mimeType?: string): Promise<UploadResult>;
+    upload(file: Blob | Uint8Array | ArrayBuffer, filename?: string, mimeType?: string, options?: UploadFileOptions): Promise<UploadResult>;
     /**
      * Download and decrypt a file.
      *
@@ -106,7 +115,7 @@ declare class DecentraVault {
      *
      * @param fileId  File ID returned from upload()
      */
-    retrieve(fileId: string): Promise<RetrieveResult>;
+    retrieve(fileId: string, options: EndUserFilterOptions): Promise<RetrieveResult>;
     /**
      * Verify a file's integrity against the Polygon blockchain.
      *
@@ -115,17 +124,17 @@ declare class DecentraVault {
      *
      * @param fileId  File ID returned from upload()
      */
-    verify(fileId: string): Promise<VerifyResult>;
+    verify(fileId: string, options: EndUserFilterOptions): Promise<VerifyResult>;
     /**
      * List all files uploaded with this API key.
      */
-    list(): Promise<FileInfo[]>;
+    list(options: EndUserFilterOptions): Promise<FileInfo[]>;
     /**
      * Permanently delete a file and its encryption key.
      *
      * @param fileId  File ID returned from upload()
      */
-    delete(fileId: string): Promise<void>;
+    delete(fileId: string, options: EndUserFilterOptions): Promise<void>;
     /**
      * Poll until blockchain anchoring is confirmed or failed.
      *
@@ -141,7 +150,7 @@ declare class DecentraVault {
      * console.log(status); // 'confirmed'
      * ```
      */
-    waitForBlockchain(fileId: string, timeoutMs?: number): Promise<'confirmed' | 'failed'>;
+    waitForBlockchain(fileId: string, timeoutMs?: number, options?: EndUserFilterOptions): Promise<'confirmed' | 'failed'>;
 }
 
-export { DecentraVault, type DecentraVaultOptions, type FileInfo, type RetrieveResult, type UploadResult, type VerifyResult };
+export { DecentraVault, type DecentraVaultOptions, type EndUserFilterOptions, type FileInfo, type RetrieveResult, type UploadFileOptions, type UploadResult, type VerifyResult };

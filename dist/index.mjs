@@ -80,7 +80,7 @@ var DecentraVault = class {
    * @param filename  Original filename (stored encrypted — never sent to IPFS)
    * @param mimeType  MIME type e.g. 'application/pdf'
    */
-  async upload(file, filename = "file", mimeType = "application/octet-stream") {
+  async upload(file, filename = "file", mimeType = "application/octet-stream", options) {
     let blob;
     if (file instanceof Blob) {
       blob = file;
@@ -92,6 +92,9 @@ var DecentraVault = class {
     }
     const form = new FormData();
     form.append("file", blob, filename);
+    if (options?.userEmail) {
+      form.append("user_email", options.userEmail);
+    }
     const res = await fetch(`${this.baseUrl}/files/upload`, {
       method: "POST",
       headers: this.authHeaders,
@@ -116,8 +119,11 @@ var DecentraVault = class {
    *
    * @param fileId  File ID returned from upload()
    */
-  async retrieve(fileId) {
-    const data = await this.request(`/files/${fileId}/download`);
+  async retrieve(fileId, options) {
+    if (!options?.userEmail) {
+      throw new Error("DecentraVault: userEmail is required for retrieve().");
+    }
+    const data = await this.request(`/files/${fileId}/download?user_email=${encodeURIComponent(options.userEmail)}`);
     if (data.integrity !== "ok") {
       throw new Error(`DecentraVault: Integrity check failed for file ${fileId}`);
     }
@@ -143,8 +149,11 @@ var DecentraVault = class {
    *
    * @param fileId  File ID returned from upload()
    */
-  async verify(fileId) {
-    const data = await this.request(`/files/${fileId}/verify`);
+  async verify(fileId, options) {
+    if (!options?.userEmail) {
+      throw new Error("DecentraVault: userEmail is required for verify().");
+    }
+    const data = await this.request(`/files/${fileId}/verify?user_email=${encodeURIComponent(options.userEmail)}`);
     return {
       verified: data.verified,
       reason: data.reason,
@@ -157,8 +166,11 @@ var DecentraVault = class {
   /**
    * List all files uploaded with this API key.
    */
-  async list() {
-    const data = await this.request("/files");
+  async list(options) {
+    if (!options?.userEmail) {
+      throw new Error("DecentraVault: userEmail is required for list().");
+    }
+    const data = await this.request(`/files?user_email=${encodeURIComponent(options.userEmail)}`);
     return (data.files ?? []).map((f) => ({
       fileId: f.file_id,
       originalName: f.original_name,
@@ -166,6 +178,7 @@ var DecentraVault = class {
       sizeBytes: f.size_bytes,
       hash: f.hash,
       cid: f.cid,
+      userEmail: f.user_email,
       createdAt: f.created_at
     }));
   }
@@ -174,8 +187,11 @@ var DecentraVault = class {
    *
    * @param fileId  File ID returned from upload()
    */
-  async delete(fileId) {
-    await this.request(`/files/${fileId}`, { method: "DELETE" });
+  async delete(fileId, options) {
+    if (!options?.userEmail) {
+      throw new Error("DecentraVault: userEmail is required for delete().");
+    }
+    await this.request(`/files/${fileId}?user_email=${encodeURIComponent(options.userEmail)}`, { method: "DELETE" });
   }
   /**
    * Poll until blockchain anchoring is confirmed or failed.
@@ -192,10 +208,13 @@ var DecentraVault = class {
    * console.log(status); // 'confirmed'
    * ```
    */
-  async waitForBlockchain(fileId, timeoutMs = 6e4) {
+  async waitForBlockchain(fileId, timeoutMs = 6e4, options) {
+    if (!options?.userEmail) {
+      throw new Error("DecentraVault: userEmail is required for waitForBlockchain().");
+    }
     const deadline = Date.now() + timeoutMs;
     while (Date.now() < deadline) {
-      const data = await this.request(`/files/${fileId}`);
+      const data = await this.request(`/files/${fileId}?user_email=${encodeURIComponent(options.userEmail)}`);
       const status = data.file?.blockchain_status;
       if (status === "confirmed" || status === "failed") {
         return status;

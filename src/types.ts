@@ -55,7 +55,20 @@ export interface FileInfo {
   sizeBytes: number;
   hash: string;
   cid: string;
+  userEmail: string;
   createdAt: string;
+}
+
+// ── Per end-user filtering options ───────────────────────────────────────────
+
+export interface EndUserFilterOptions {
+  /** End-user email used for per-user file scoping */
+  userEmail: string;
+}
+
+export interface UploadFileOptions extends EndUserFilterOptions {
+  /** Reserved for future use */
+  metadata?: Record<string, unknown>;
 }
 
 // ── Constructor options ───────────────────────────────────────────────────────
